@@ -1,0 +1,280 @@
+﻿<Window x:Class="SchoolManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:SchoolManager.MVVM.ViewModel"
+        xmlns:local="clr-namespace:SchoolManager"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:view="clr-namespace:SchoolManager.MVVM.View"
+        mc:Ignorable="d"
+        Height="600" Width="920"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance viewModel:MainViewModel, IsDesignTimeCreatable=True}" Icon="/Images/Logo.png">
+    <Window.Resources>
+        <!-- Стиль кнопки Close, Minimize и User -->
+        <Style x:Key="RoundedIconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                BorderBrush="Transparent"
+                                CornerRadius="5"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Border.RenderTransform>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- При наведении -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ButtonBorder"
+                                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                                             To="1.03"
+                                                             Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ButtonBorder"
+                                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                                             To="1.03"
+                                                             Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ButtonBorder"
+                                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)"
+                                                             To="1"
+                                                             Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ButtonBorder"
+                                                             Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)"
+                                                             To="1"
+                                                             Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <!-- При наведении -->
+                            <DataTrigger Binding="{Binding IsLoggedIn, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="Transparent"/>
+                            </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsLoggedIn, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False"/>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#3c3c5a"/>
+                            </MultiDataTrigger>
+                            <!-- При фокусе -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsLoggedIn, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False"/>
+                                    <Condition Binding="{Binding IsFocused, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#3c3c5a"/>
+                            </MultiDataTrigger>
+                            <!-- При нажатии -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsLoggedIn, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="False"/>
+                                    <Condition Binding="{Binding IsPressed, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="#2E2E4A"/>
+                            </MultiDataTrigger>
+                            <!-- Отключение подсветки -->
+                            <DataTrigger Binding="{Binding IsLoggedIn, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="Transparent"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Проверка роли -->
+        <local:RoleToAdminVisibilityConverter x:Key="RoleToAdminVisibilityConverter"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <viewModel:MainViewModel />
+    </Window.DataContext>
+    <Border CornerRadius="20">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#2b2d52" Offset="0" />
+                <GradientStop Color="#3a3d6b" Offset="0.25" />
+                <GradientStop Color="#454775" Offset="0.5" />
+                <GradientStop Color="#595580" Offset="0.75" />
+                <GradientStop Color="#6a6a9a" Offset="1" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0"
+                  Grid.ColumnSpan="2"
+                  Background="Transparent"
+                  MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+                <TextBlock Text="School Manager"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Grid.ColumnSpan="2"
+                           Foreground="White"
+                           FontSize="22"
+                           FontFamily="/Fonts/#Stolzl Book"/>
+                <Button Command="{Binding LoginCommand}"
+                        Style="{StaticResource RoundedIconButtonStyle}"
+                        BorderThickness="0"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        Grid.Column="0"
+                        Margin="85,0,0,0"
+                        Width="30">
+                    <Image Source="/Images/User.png"
+                           Width="30" Height="30"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                </Button>
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Grid.Column="1">
+                    <Button Style="{StaticResource RoundedIconButtonStyle}"
+                            Width="25"
+                            Click="Minimize_Click">
+                        <Image Source="/Images/Minus.png"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Button>
+                    <Button Style="{StaticResource RoundedIconButtonStyle}"
+                            Click="Close_Click"
+                            Width="25"
+                            Margin="5,0,15,0">
+                        <Image Source="/Images/Close.png"
+                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <Rectangle x:Name="Overlay"
+                       Grid.ColumnSpan="2"
+                       Fill="Black"
+                       Opacity="0"
+                       Visibility="Hidden"/>
+            <StackPanel Grid.Row="1">
+                <RadioButton x:Name="HomeRadioButton"
+                             Height="50"
+                             Style="{StaticResource MenuButtonTheme}"
+                             IsChecked="{Binding MenuItems[0].IsChecked, Mode=TwoWay}"
+                             Command="{Binding HomeViewCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Images/Home.png" Width="35" Height="35" Margin="-45,-10,0,-10" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Главная" FontFamily="/Fonts/#Stolzl Light"/>
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton x:Name="ScheduleRadioButton"
+                             Height="50"
+                             Style="{StaticResource MenuButtonTheme}"
+                             IsChecked="{Binding MenuItems[1].IsChecked, Mode=TwoWay}"
+                             Command="{Binding ScheduleViewCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Images/Schedule.png" Width="35" Height="35" Margin="-45,-10,0,-10" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Расписание" FontFamily="/Fonts/#Stolzl Light"/>
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton x:Name="PerformanceAttendanceRadioButton"
+                             Height="50"
+                             Style="{StaticResource MenuButtonTheme}"
+                             IsChecked="{Binding MenuItems[2].IsChecked, Mode=TwoWay}"
+                             Command="{Binding PerformanceAttendanceViewCommand}"
+                             Visibility="{Binding CanAccessTeacherFeatures, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=debug}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Images/Performance.png" Width="35" Height="35" Margin="-45,-10,0,-10" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Успеваемость" FontFamily="/Fonts/#Stolzl Light"/>
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton x:Name="EditScheduleRadioButton"
+                             Height="50"
+                             Style="{StaticResource MenuButtonTheme}"
+                             IsChecked="{Binding MenuItems[3].IsChecked, Mode=TwoWay}"
+                             Command="{Binding EditScheduleViewCommand}"
+                             Visibility="{Binding CanAccessEmployeeFeatures, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=debug}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Images/EditSchedule.png" Width="35" Height="35" Margin="-45,-10,0,-10" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Сост. расписания" FontFamily="/Fonts/#Stolzl Light"/>
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton x:Name="ClassManagementRadioButton"
+                             Height="50"
+                             Style="{StaticResource MenuButtonTheme}"
+                             IsChecked="{Binding MenuItems[4].IsChecked, Mode=TwoWay}"
+                             Command="{Binding ClassManagementViewCommand}"
+                             Visibility="{Binding CanAccessEmployeeFeatures, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=debug}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Images/Class.png" Width="35" Height="35" Margin="-45,-10,0,-10" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Управ. учениками" FontFamily="/Fonts/#Stolzl Light"/>
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton x:Name="TeacherManagementRadioButton"
+                             Height="50"
+                             Style="{StaticResource MenuButtonTheme}"
+                             IsChecked="{Binding MenuItems[5].IsChecked, Mode=TwoWay}"
+                             Command="{Binding TeacherManagementViewCommand}"
+                             Visibility="{Binding CanAccessEmployeeFeatures, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=debug}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Images/Teacher.png" Width="35" Height="35" Margin="-45,-10,0,-10" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Управ. препод-ми" FontFamily="/Fonts/#Stolzl Light"/>
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton x:Name="EditStaffRadioButton"
+                             Height="50"
+                             Style="{StaticResource MenuButtonTheme}"
+                             IsChecked="{Binding MenuItems[6].IsChecked, Mode=TwoWay}"
+                             Command="{Binding EditStaffViewCommand}"
+                             Visibility="{Binding CanAccessAdminFeatures, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=debug}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Images/Staff.png" Width="35" Height="35" Margin="-45,-10,0,-10" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Управ. персоналом" FontFamily="/Fonts/#Stolzl Light"/>
+                    </StackPanel>
+                </RadioButton>
+            </StackPanel>
+            <ContentControl x:Name="MainContentControl"
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Margin="10"
+                            Content="{Binding CurrentView}"/>
+            <StackPanel Grid.Column="1"
+                        Grid.Row="1"
+                        VerticalAlignment="Bottom"
+                        Margin="10"
+                        Visibility="{Binding UserRole, Converter={StaticResource RoleToVisibilityConverter}}"/>
+            <!-- Оверлей для профиля пользователя -->
+            <Grid Grid.RowSpan="2" Grid.ColumnSpan="2"
+                  Visibility="{Binding IsUserProfileVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <!-- Фон оверлея -->
+                <Rectangle Fill="#80000000"
+                           MouseDown="Overlay_MouseDown"/>
+                <!-- Панель профиля -->
+                <view:UserProfileView Width="200"
+                                      HorizontalAlignment="Left"
+                                      VerticalAlignment="Top"
+                                      Margin="0,50,0,0"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
