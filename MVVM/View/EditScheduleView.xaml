@@ -1,0 +1,204 @@
+﻿<UserControl x:Class="SchoolManager.MVVM.View.EditScheduleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:SchoolManager.Converters"
+             xmlns:DropShadowEffect禁止="http://schemas.microsoft.com/netfx/2009/xaml/presentation"
+             xmlns:DropShadowEffect="http://schemas.microsoft.com/xps/2005/06"
+             xmlns:views="clr-namespace:SchoolManager.MVVM.View"
+             xmlns:viewModel="clr-namespace:SchoolManager.MVVM.ViewModel"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Theme/ScrollBarTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <converters:ClassNameToScheduleConverter x:Key="ClassNameToScheduleConverter"/>
+            <converters:ClassNameToVisibilityConverter x:Key="ClassNameToVisibilityConverter"/>
+            <converters:ClassNameToVisibilityMultiConverter x:Key="ClassNameToVisibilityMultiConverter"/>
+            <converters:TimeRangeConverter x:Key="TimeRangeConverter"/>
+            <converters:LessonNumberToCollectionConverter x:Key="LessonNumberToCollectionConverter"/>
+            <DataTemplate DataType="{x:Type viewModel:ScheduleViewModel}">
+                <views:ScheduleView/>
+            </DataTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!-- Выбор даты -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
+            <TextBlock Text="Дата:" FontSize="18" VerticalAlignment="Center" Margin="10,0,10,0" Foreground="White" FontFamily="/Fonts/#Stolzl Book"/>
+            <DatePicker Width="150"
+                        SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource DatePickerTheme}"/>
+        </StackPanel>
+        <!-- Список классов -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Classes}" x:Name="ItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Expander x:Name="ClassExpander" Style="{StaticResource ExpanderTheme}">
+                                <Expander.Header>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                   Style="{StaticResource TextBlockTheme}" FontSize="18"/>
+                                        <Image Grid.Column="1" Source="/Images/check.png" Width="20" Height="20" Margin="5,0,10,0" 
+                                               RenderOptions.BitmapScalingMode="HighQuality">
+                                            <Image.Visibility>
+                                                <MultiBinding Converter="{StaticResource ClassNameToVisibilityConverter}">
+                                                    <Binding Path="."/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.ClassScheduleStatus"/>
+                                                </MultiBinding>
+                                            </Image.Visibility>
+                                        </Image>
+                                    </Grid>
+                                </Expander.Header>
+                                <StackPanel Margin="10">
+                                    <!-- Уроки -->
+                                    <ItemsControl>
+                                        <ItemsControl.ItemsSource>
+                                            <MultiBinding Converter="{StaticResource ClassNameToScheduleConverter}">
+                                                <Binding Path="."/>
+                                                <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.ClassSchedules"/>
+                                            </MultiBinding>
+                                        </ItemsControl.ItemsSource>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#2F2F4F" BorderBrush="#50508A" CornerRadius="10" Margin="0,0,0,5" Padding="15">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect:DropShadowEffect Color="Black" Direction="315" ShadowDepth="2" Opacity="0.3" BlurRadius="5"/>
+                                                    </Border.Effect>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Номер урока:" VerticalAlignment="Center" Margin="0,0,5,5" Style="{StaticResource TextBlockTheme}" FontSize="16"/>
+                                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding LessonNumber}" Margin="0,0,0,5" Style="{StaticResource TextBlockTheme}" FontSize="16"/>
+                                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Время:" VerticalAlignment="Center" Margin="0,0,5,5" Style="{StaticResource TextBlockTheme}" FontSize="16"/>
+                                                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,0,5" Style="{StaticResource TextBlockTheme}" FontSize="16">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding Converter="{StaticResource TimeRangeConverter}">
+                                                                    <Binding Path="StartTime"/>
+                                                                    <Binding Path="EndTime"/>
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Предмет:" VerticalAlignment="Center" Margin="0,0,5,5" Style="{StaticResource TextBlockTheme}" FontSize="16"/>
+                                                        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.Subjects}"
+                                                                  SelectedItem="{Binding SubjectName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                  Width="250" HorizontalAlignment="Left" Margin="0,0,0,5" Style="{StaticResource ComboBoxTheme}"/>
+                                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Преподаватель:" VerticalAlignment="Center" Margin="0,0,5,5" Style="{StaticResource TextBlockTheme}" FontSize="16"/>
+                                                        <ComboBox Grid.Row="3" Grid.Column="1" Width="250" HorizontalAlignment="Left" Margin="0,0,0,5" Style="{StaticResource ComboBoxTheme}">
+                                                            <ComboBox.ItemsSource>
+                                                                <MultiBinding Converter="{StaticResource LessonNumberToCollectionConverter}">
+                                                                    <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.AvailableTeachersByLesson"/>
+                                                                    <Binding Path="LessonNumber"/>
+                                                                </MultiBinding>
+                                                            </ComboBox.ItemsSource>
+                                                            <ComboBox.SelectedItem>
+                                                                <Binding Path="TeacherName" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                                                    <Binding.TargetNullValue>
+                                                                        <x:Null/>
+                                                                    </Binding.TargetNullValue>
+                                                                </Binding>
+                                                            </ComboBox.SelectedItem>
+                                                        </ComboBox>
+                                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Кабинет:" VerticalAlignment="Center" Margin="0,0,0,5" Style="{StaticResource TextBlockTheme}" FontSize="16"/>
+                                                        <ComboBox Grid.Row="4" Grid.Column="1" Width="250" HorizontalAlignment="Left" Style="{StaticResource ComboBoxTheme}">
+                                                            <ComboBox.ItemsSource>
+                                                                <MultiBinding Converter="{StaticResource LessonNumberToCollectionConverter}">
+                                                                    <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.AvailableClassroomsByLesson"/>
+                                                                    <Binding Path="LessonNumber"/>
+                                                                </MultiBinding>
+                                                            </ComboBox.ItemsSource>
+                                                            <ComboBox.SelectedItem>
+                                                                <Binding Path="ClassroomNumber" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                                                                    <Binding.TargetNullValue>
+                                                                        <x:Null/>
+                                                                    </Binding.TargetNullValue>
+                                                                </Binding>
+                                                            </ComboBox.SelectedItem>
+                                                        </ComboBox>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <!-- Кнопки управления -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,5,0,5" HorizontalAlignment="Center">
+                                        <Button Style="{StaticResource IconButtonTheme}" 
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AddLessonCommand}" 
+                                                CommandParameter="{Binding}">
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{StaticResource ClassNameToVisibilityMultiConverter}" ConverterParameter="Add">
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.ClassSchedules"/>
+                                                    <Binding Path="."/>
+                                                </MultiBinding>
+                                            </Button.Visibility>
+                                            <Image Source="/Images/Folder_Add.png" Width="30" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        </Button>
+                                        <Button Style="{StaticResource IconButtonTheme}" 
+                                                Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.RemoveLessonCommand}" 
+                                                CommandParameter="{Binding}">
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{StaticResource ClassNameToVisibilityMultiConverter}">
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.ClassSchedules"/>
+                                                    <Binding Path="."/>
+                                                </MultiBinding>
+                                            </Button.Visibility>
+                                            <Image Source="/Images/Folder_Remove.png" Width="30" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        </Button>
+
+                                        <Button Content="Сохранить" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.SaveScheduleCommand}" 
+                                                CommandParameter="{Binding}" Style="{StaticResource LoginButtonTheme}" x:Name="SaveButton"
+                                                Width="200" Height="40" Click="SaveButton_Click"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Expander>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+        <!-- Кнопка Публикации -->
+        <Button Grid.Row="2" Content="Опубликовать" Command="{Binding PublishScheduleCommand}" 
+                Style="{StaticResource LoginButtonTheme}" Margin="10"
+                Width="300" Height="40" FontFamily="/Fonts/#Stolzl Book">
+            <Button.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource LoginButtonTheme}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="10">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Resources>
+        </Button>
+    </Grid>
+</UserControl>

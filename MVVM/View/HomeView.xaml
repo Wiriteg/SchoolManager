@@ -1,0 +1,619 @@
+﻿<UserControl x:Class="SchoolManager.MVVM.View.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SchoolManager.MVVM.View"
+             xmlns:converters="clr-namespace:SchoolManager.Converters"
+             mc:Ignorable="d" d:DesignWidth="800"
+             MouseWheel="UserControl_MouseWheel" Height="885">
+    <UserControl.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:RoleToVisibilityConverter x:Key="RoleToVisibilityConverter"/>
+        <converters:DebugConverter x:Key="DebugConverter"/>
+    </UserControl.Resources>
+    <ScrollViewer x:Name="MainScrollViewer" 
+                  VerticalScrollBarVisibility="Auto" 
+                  HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,425">
+        <StackPanel>
+            <!-- Для гостей -->
+            <StackPanel x:Name="StudentPanel" 
+            Visibility="Visible">
+                <TextBlock Text="Для гостей"
+               Foreground="White"
+               FontSize="28"
+               HorizontalAlignment="Left"
+               Margin="15,0,0,10"
+               FontFamily="/Fonts/#Stolzl Book"/>
+                <StackPanel Orientation="Horizontal" Margin="15,0,0,15">
+                    <Border Width="500" Height="150">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                                <GradientStop Color="#3B4A99" Offset="0"/>
+                                <GradientStop Color="#4961B8" Offset="0.33"/>
+                                <GradientStop Color="#5A78CE" Offset="0.66"/>
+                                <GradientStop Color="#6A8BE2" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Clip>
+                            <RectangleGeometry RadiusX="10" RadiusY="10" Rect="0,0,500,150"/>
+                        </Border.Clip>
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black" 
+                                  Direction="315" 
+                                  ShadowDepth="5" 
+                                  Opacity="0.3" 
+                                  BlurRadius="10"/>
+                        </Border.Effect>
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ScaleTransformSchedule" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <Border.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5"/>
+                        </Border.RenderTransformOrigin>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                         To="1.03" 
+                                                         Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                         To="1.03" 
+                                                         Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                         To="1" 
+                                                         Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                         To="1" 
+                                                         Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding SwitchToScheduleCommand}"/>
+                        </Border.InputBindings>
+                        <Grid>
+                            <StackPanel>
+                                <TextBlock Text="Расписание"
+                                           Foreground="White"
+                                           FontSize="26"
+                                           Margin="20,10,10,0"
+                                           FontFamily="/Fonts/#Stolzl Light"/>
+                                <TextBlock Text="{Binding LastPublishedMessage}"
+                                           Foreground="White"
+                                           FontSize="18"
+                                           Margin="20,10,10,0"
+                                           FontFamily="/Fonts/#Stolzl Light"/>
+                            </StackPanel>
+                            <Image Width="150"
+                                   Height="150"
+                                   Source="/Images/ScheduleC.png"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,-5,-20"
+                                   RenderTransformOrigin="0.5,0.5"
+                                   RenderOptions.BitmapScalingMode="HighQuality">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="35"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+            <!-- Для преподавателей -->
+            <StackPanel x:Name="TeacherPanel" 
+            Visibility="{Binding DataContext.CanAccessTeacherFeatures, 
+                         RelativeSource={RelativeSource AncestorType={x:Type Window}}, 
+                         Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="Margin" Value="15,0,0,0"/>
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Text="Для преподавателей"
+                           Foreground="White"
+                           FontSize="28"
+                           HorizontalAlignment="Left"
+                           Margin="15,0,0,10"
+                           FontFamily="/Fonts/#Stolzl Book"/>
+                <StackPanel Orientation="Horizontal" Margin="15,0,0,15">
+                    <Border Width="500" Height="150" CornerRadius="10" Margin="0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                                <GradientStop Color="#654D8E" Offset="0"/>
+                                <GradientStop Color="#7A61A6" Offset="0.33"/>
+                                <GradientStop Color="#8E75BB" Offset="0.66"/>
+                                <GradientStop Color="#9F89D1" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Clip>
+                            <RectangleGeometry RadiusX="10" RadiusY="10" Rect="0,0,500,150"/>
+                        </Border.Clip>
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black"
+                                              Direction="315"
+                                              ShadowDepth="5"
+                                              Opacity="0.3"
+                                              BlurRadius="10"/>
+                        </Border.Effect>
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ScaleTransformFourthAdmin" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <Border.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5"/>
+                        </Border.RenderTransformOrigin>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                 To="1.03" 
+                                                 Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                 To="1.03" 
+                                                 Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                 To="1" 
+                                                 Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                 To="1" 
+                                                 Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding SwitchToEditScoreCommand}"/>
+                        </Border.InputBindings>
+                        <Grid>
+                            <TextBlock Text="Выставление
+                                       успеваемости"
+                                       Foreground="White"
+                                       FontSize="26"
+                                       TextWrapping="Wrap"
+                                       Margin="20,10,10,0"
+                                       FontFamily="/Fonts/#Stolzl Light"/>
+                            <Image Width="150"
+                                   Height="150"
+                                   Source="/Images/PerformanceC.png"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,-5,-20"
+                                   RenderTransformOrigin="0.5,0.5"
+                                   RenderOptions.BitmapScalingMode="HighQuality">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="35"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+            <!-- Для сотрудников -->
+            <StackPanel x:Name="StaffPanel" 
+            Visibility="{Binding DataContext.CanAccessEmployeeFeatures, 
+                         RelativeSource={RelativeSource AncestorType={x:Type Window}}, 
+                         Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="Margin" Value="15,0,0,0"/>
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Text="Для сотрудников"
+                           Foreground="White"
+                           FontSize="28"
+                           HorizontalAlignment="Left"
+                           Margin="15,0,0,10"
+                           FontFamily="/Fonts/#Stolzl Book"/>
+                <StackPanel Orientation="Horizontal" Margin="15,0,0,15">
+                    <Border Width="335" Height="150" CornerRadius="10" Margin="0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                                <GradientStop Color="#436D6B" Offset="0"/>
+                                <GradientStop Color="#578E89" Offset="0.33"/>
+                                <GradientStop Color="#6BA89F" Offset="0.66"/>
+                                <GradientStop Color="#7CC2B3" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Clip>
+                            <RectangleGeometry RadiusX="10" RadiusY="10" Rect="0,0,335,150"/>
+                        </Border.Clip>
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black"
+                                              Direction="315"
+                                              ShadowDepth="5"
+                                              Opacity="0.3"
+                                              BlurRadius="10"/>
+                        </Border.Effect>
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ScaleTransformEdit" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <Border.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5"/>
+                        </Border.RenderTransformOrigin>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                                     To="1.03" 
+                                                                     Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                                     To="1.03" 
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                                     To="1" 
+                                                                     Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                                     To="1" 
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding SwitchToEditScheduleCommand}"/>
+                        </Border.InputBindings>
+                        <Grid>
+                            <TextBlock Text="Составление расписания"
+                                       Foreground="White"
+                                       FontSize="26"
+                                       Margin="20,10,10,0"
+                                       TextWrapping="Wrap"
+                                       FontFamily="/Fonts/#Stolzl Light"/>
+                            <Image Width="150"
+                                   Height="150"
+                                   Source="/Images/EditScheduleC.png"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,-5,-20"
+                                   RenderTransformOrigin="0.5,0.5"
+                                   RenderOptions.BitmapScalingMode="HighQuality">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="35"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                        </Grid>
+                    </Border>
+                    <Border Width="150"
+                            Height="150"
+                            CornerRadius="10"
+                            Margin="15,0,0,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                                <GradientStop Color="#7E5F7E" Offset="0"/>
+                                <GradientStop Color="#946B95" Offset="0.33"/>
+                                <GradientStop Color="#AB89AB" Offset="0.66"/>
+                                <GradientStop Color="#C39EC3" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Clip>
+                            <RectangleGeometry RadiusX="10" RadiusY="10" Rect="0,0,150,150"/>
+                        </Border.Clip>
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black" 
+                                              Direction="315" 
+                                              ShadowDepth="5" 
+                                              Opacity="0.3" 
+                                              BlurRadius="10"/>
+                        </Border.Effect>
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ScaleTransformSecondAdmin" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <Border.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5"/>
+                        </Border.RenderTransformOrigin>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                                     To="1.03" 
+                                                                     Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                                     To="1.03" 
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                                     To="1" 
+                                                                     Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                                     To="1" 
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding SwitchToClassManagementCommand}"/>
+                        </Border.InputBindings>
+                        <Grid>
+                            <TextBlock Text="Управ. классом"
+                                       Foreground="White"
+                                       FontSize="20"
+                                       Margin="20,10,10,0"
+                                       TextWrapping="Wrap"
+                                       FontFamily="/Fonts/#Stolzl Light"/>
+                            <Image Width="125"
+                                   Height="125"
+                                   Source="/Images/ClassC.png"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,-5,-20"
+                                   RenderTransformOrigin="0.5,0.5"
+                                   RenderOptions.BitmapScalingMode="HighQuality">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="35"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                        </Grid>
+                    </Border>
+                    <Border Width="150"
+                            Height="150"
+                            CornerRadius="10"
+                            Margin="15,0,0,0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                                <GradientStop Color="#3C7A62" Offset="0"/>
+                                <GradientStop Color="#4FA779" Offset="0.33"/>
+                                <GradientStop Color="#6BCB96" Offset="0.66"/>
+                                <GradientStop Color="#83E4AA" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Clip>
+                            <RectangleGeometry RadiusX="10" RadiusY="10" Rect="0,0,150,150"/>
+                        </Border.Clip>
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black" 
+                                              Direction="315" 
+                                              ShadowDepth="5" 
+                                              Opacity="0.3" 
+                                              BlurRadius="10"/>
+                        </Border.Effect>
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ScaleTransformThirdAdmin" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <Border.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5"/>
+                        </Border.RenderTransformOrigin>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                                     To="1.03" 
+                                                                     Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                                     To="1.03" 
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                                     To="1" 
+                                                                     Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                                     To="1" 
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding SwitchToTeacherManagementCommand}"/>
+                        </Border.InputBindings>
+                        <Grid>
+                            <TextBlock Text="Управ. препод-ми"
+                                       Foreground="White"
+                                       FontSize="20"
+                                       Margin="20,10,10,0"
+                                       TextWrapping="Wrap"
+                                       FontFamily="/Fonts/#Stolzl Light"/>
+                            <Image Width="125"
+                                   Height="125"
+                                   Source="/Images/TeacherC.png"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,-5,-20"
+                                   RenderTransformOrigin="0.5,0.5"
+                                   RenderOptions.BitmapScalingMode="HighQuality">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="35"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+            <!-- Для администратора -->
+            <StackPanel x:Name="AdminPanel" 
+            Visibility="{Binding DataContext.CanAccessAdminFeatures, 
+                         RelativeSource={RelativeSource AncestorType={x:Type Window}}, 
+                         Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="Margin" Value="15,0,0,0"/>
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Text="Для администратора"
+                           Foreground="White"
+                           FontSize="28"
+                           HorizontalAlignment="Left"
+                           Margin="15,0,0,10"
+                           FontFamily="/Fonts/#Stolzl Book"/>
+                <StackPanel Orientation="Horizontal" Margin="15,0,0,15">
+                    <Border Width="500" Height="150" CornerRadius="10" Margin="0">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                                <GradientStop Color="#405A87" Offset="0"/>
+                                <GradientStop Color="#506E9A" Offset="0.33"/>
+                                <GradientStop Color="#6985B6" Offset="0.66"/>
+                                <GradientStop Color="#7E99C9" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Clip>
+                            <RectangleGeometry RadiusX="10" RadiusY="10" Rect="0,0,500,150"/>
+                        </Border.Clip>
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black" 
+                                              Direction="315" 
+                                              ShadowDepth="5" 
+                                              Opacity="0.3" 
+                                              BlurRadius="10"/>
+                        </Border.Effect>
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ScaleTransformEditStaff" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <Border.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5"/>
+                        </Border.RenderTransformOrigin>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Trigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                                     To="1.03" 
+                                                                     Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                                     To="1.03" 
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.EnterActions>
+                                        <Trigger.ExitActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleX)" 
+                                                                     To="1" 
+                                                                     Duration="0:0:0.1"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="(Border.RenderTransform).(ScaleTransform.ScaleY)" 
+                                                                     To="1" 
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </Trigger.ExitActions>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftClick" Command="{Binding SwitchToStaffManagementCommand}"/>
+                        </Border.InputBindings>
+                        <Grid>
+                            <TextBlock Text="Управление персоналом"
+                                       Foreground="White"
+                                       FontSize="26"
+                                       TextWrapping="Wrap"
+                                       Margin="20,10,10,0"
+                                       FontFamily="/Fonts/#Stolzl Light"/>
+                            <Image Width="150"
+                                   Height="150"
+                                   Source="/Images/StaffC.png"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,-5,-20"
+                                   RenderTransformOrigin="0.5,0.5"
+                                   RenderOptions.BitmapScalingMode="HighQuality">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="35"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

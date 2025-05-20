@@ -1,0 +1,232 @@
+﻿<UserControl x:Class="SchoolManager.MVVM.View.EditStaffView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:SchoolManager.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:BooleanToStringConverter x:Key="BooleanToStringConverter"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Theme/ScrollBarTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!-- Заголовок -->
+        <TextBlock Grid.Row="0"
+                   Text="Управление персоналом"
+                   Style="{StaticResource TextBlockTheme}"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Top"
+                   Margin="0,20,0,10"/>
+        <!-- Список сотрудников -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Visible"
+                      Margin="10"
+                      CanContentScroll="False">
+            <Grid>
+                <DataGrid ItemsSource="{Binding StaffEntries}"
+                          SelectedItem="{Binding SelectedStaffEntry}"
+                          AutoGenerateColumns="False"
+                          Background="Transparent"
+                          RowHeight="40"
+                          IsReadOnly="True"
+                          ColumnHeaderHeight="40"
+                          BorderThickness="0"
+                          HeadersVisibility="Column"
+                          HorizontalAlignment="Left"
+                          ScrollViewer.CanContentScroll="False"
+                          HorizontalGridLinesBrush="#808080"
+                          VerticalGridLinesBrush="#808080"
+                          SelectionUnit="FullRow"
+                    PreviewMouseWheel="DataGrid_PreviewMouseWheel">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="Padding" Value="10,5"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Background" Value="#5065A6"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="#3B4A80"/>
+                                    <!-- Цвет выделения строки -->
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <!-- Прозрачный фон для отображения цвета строки -->
+                            <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Padding" Value="10,5"/>
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName}" Width="Auto" MinWidth="100">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Имя" Binding="{Binding FirstName}" Width="Auto" MinWidth="100">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Отчество" Binding="{Binding MiddleName}" Width="Auto" MinWidth="100">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Роль" Binding="{Binding Role}" Width="Auto" MinWidth="120">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Стаж" Binding="{Binding Experience}" Width="Auto" MinWidth="50">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Почта" Binding="{Binding Email}" Width="Auto" MinWidth="150">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </ScrollViewer>
+        <!-- Кнопки управления -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Content="Добавить"
+                    Command="{Binding OpenAddStaffPopupCommand}"
+                    Width="150"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Style="{StaticResource LoginButtonTheme}"/>
+            <Button Content="Редактировать"
+                    Command="{Binding OpenEditStaffPopupCommand}"
+                    Width="150"
+                    Height="40"
+                    Margin="0,0,10,0"
+                    Style="{StaticResource LoginButtonTheme}"/>
+            <Button Content="Удалить"
+                    Command="{Binding DeleteStaffCommand}"
+                    Width="150"
+                    Height="40"
+                    Style="{StaticResource LoginButtonTheme}"/>
+        </StackPanel>
+        <!-- Всплывающее окно для редактирования -->
+        <Popup IsOpen="{Binding IsPopupOpen}"
+               Placement="Center"
+               AllowsTransparency="True">
+            <Border Background="#2F2F4F"
+                    BorderBrush="#50508A"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="20"
+                    Width="350">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto"
+                              CanContentScroll="False">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Text="{Binding IsEditing, Converter={StaticResource BooleanToStringConverter}, ConverterParameter=Редактировать персонал|Добавить персонал}"
+                                   FontSize="18"
+                                   Style="{StaticResource TextBlockTheme}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,15"/>
+
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Фамилия:" Style="{StaticResource TextBlockTheme}" VerticalAlignment="Center" Margin="0,5"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding PopupLastName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PopupTextboxTheme}" Margin="0,5"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Имя:" Style="{StaticResource TextBlockTheme}" VerticalAlignment="Center" Margin="0,5"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PopupFirstName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PopupTextboxTheme}" Margin="0,5"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Отчество:" Style="{StaticResource TextBlockTheme}" VerticalAlignment="Center" Margin="0,5"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PopupMiddleName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PopupTextboxTheme}" Margin="0,5"/>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Роль:" Style="{StaticResource TextBlockTheme}" VerticalAlignment="Center" Margin="0,5"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding PopupRole, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PopupTextboxTheme}" Margin="0,5"/>
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Стаж:" Style="{StaticResource TextBlockTheme}" VerticalAlignment="Center" Margin="0,5"/>
+                            <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding PopupExperience, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PopupTextboxTheme}" Margin="0,5"/>
+
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="Почта:" Style="{StaticResource TextBlockTheme}" VerticalAlignment="Center" Margin="0,5"/>
+                            <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding PopupEmail, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PopupTextboxTheme}" Margin="0,5"/>
+
+                            <TextBlock Grid.Row="6" Grid.Column="0" Text="Пароль:" Style="{StaticResource TextBlockTheme}" VerticalAlignment="Center" Margin="0,5"/>
+                            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding PopupPassword, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource PopupTextboxTheme}" Margin="0,5"/>
+                        </Grid>
+
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                            <Button Content="Сохранить" Command="{Binding SaveStaffPopupCommand}" Width="120" Height="40" Margin="0,0,10,0" Style="{StaticResource LoginButtonTheme}"/>
+                            <Button Content="Отменить" Command="{Binding CancelPopupCommand}" Width="120" Height="40" Style="{StaticResource LoginButtonTheme}"/>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>
